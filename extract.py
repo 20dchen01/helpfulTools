@@ -22,17 +22,17 @@ for model in os.listdir(root_dir):
             if not os.path.isdir(os.path.join(root_dir, model, seed, task)):
                 continue
             
-            # read the contents of the readme file and extract the training results section
+            # read the contents of the readme file and extract the most recent training results
+            training_results = ""
             with open(os.path.join(root_dir, model, seed, task, 'README.md'), 'r') as f:
                 readme_contents = f.read()
                 start_index = readme_contents.find("### Training results")
-                if start_index == -1:
-                    continue
-                end_index = readme_contents.find("### Framework versions", start_index + 1)
-                training_results = readme_contents[start_index:end_index].strip()
+                if start_index != -1:
+                    end_index = readme_contents.find("### Framework versions", start_index + 1)
+                    training_results = readme_contents[start_index:end_index].strip().split("\n")[-1]
                 
-                # append the training results to the dataframe
-                df = df.append({'Model': model, 'Seed': seed, 'Task': task, 'Training Results': training_results}, ignore_index=True)
+            # append the training results to the dataframe
+            df = df.append({'Model': model, 'Seed': seed, 'Task': task, 'Training Results': training_results}, ignore_index=True)
 
 # save the dataframe to an Excel file
 df.to_excel('training_results.xlsx', index=False)
