@@ -30,6 +30,11 @@ for model in os.listdir(root_dir):
                 if start_index != -1:
                     end_index = readme_contents.find("### Framework versions", start_index + 1)
                     training_results = readme_contents[start_index:end_index].strip().split("\n")[-1]
+                    task_name = task.split("_")[0]
+                    if task_name in ["cola", "rte", "sst2", "qnli", "mnli"]:
+                        training_results = training_results.split()[-2]
+                    elif task_name in ["stsb", "mrpc", "qqp"]:
+                        training_results = training_results.split()[-4]
                 
             # append the training results to the dataframe
             df = df.append({'Model': model, 'Seed': seed, 'Task': task, 'Training Results': training_results}, ignore_index=True)
