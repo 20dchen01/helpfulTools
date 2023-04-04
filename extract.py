@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 # define the root directory of the models
-root_dir = '../../768DistilbertL1012/baseline'
+root_dir = '../../768DistilbertL1012/Totest'
 
 # initialize an empty dataframe
 df = pd.DataFrame(columns=['Model', 'Seed', 'Task', 'Training Results'])
