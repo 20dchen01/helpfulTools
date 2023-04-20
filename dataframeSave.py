@@ -4,6 +4,10 @@ import pandas as pd
 # define the root directory of the models
 root_dir = '../OriginalModels'
 
+csv_dir = os.path.join(root_dir, 'csvs')
+if not os.path.exists(csv_dir):
+    os.makedirs(csv_dir)
+
 # iterate over each model folder
 for model in os.listdir(root_dir):
     if not os.path.isdir(os.path.join(root_dir, model)):
@@ -46,5 +50,6 @@ for model in os.listdir(root_dir):
         # append the training results for the current seed to the dataframe for the current model
         df_model = df_model.append(seed_results, ignore_index=True)
 
-    # save the dataframe for the current model to a CSV file
-    df_model.to_csv(f"{model}.csv", index=False)
+    # save the dataframe for the current model to a CSV file under the 'csv' directory
+    csv_path = os.path.join(csv_dir, f"{model}.csv")
+    df_model.to_csv(csv_path, index=False)
