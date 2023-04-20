@@ -33,7 +33,9 @@ for model in os.listdir(root_dir):
                     task_name = task.split("_")[0]
                     if task_name in ["cola", "rte", "sst2", "qnli", "mnli"]:
                         training_results = training_results.split()[-2]
-                    elif task_name in ["stsb", "mrpc", "qqp"]:
+                    elif task_name in ["mrpc", "qqp"]:
+                        training_results = training_results.split()[-4]
+                    elif task_name in ["stsb"]:
                         training_results = training_results.split()[-4]
                 
             # append the training results to the dataframe

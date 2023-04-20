@@ -1,55 +1,43 @@
 import os
 import pandas as pd
 
-# define the root directory of the models
-root_dir = '../OriginalModels'
+# Read the Excel file
+input_file = 'training_results.xlsx'
+df = pd.read_excel(input_file)
 
-csv_dir = os.path.join(root_dir, 'csvs')
-if not os.path.exists(csv_dir):
-    os.makedirs(csv_dir)
+# Get unique model names
+models = df['Model'].unique()
 
-# iterate over each model folder
-for model in os.listdir(root_dir):
-    if not os.path.isdir(os.path.join(root_dir, model)):
-        continue
+# Create a dictionary to map tasks to their new names
+task_mapping = {
+    'qnli': 'qnli (A)',
+    'mnli': 'mnli (A)',
+    'rte': 'rte (A)',
+    'sst2': 'sst2 (A)',
+    'qqp': 'qqp (F)',
+    'mrpc': 'mrpc (F)',
+    'stsb': 'stsb (P)',
+    'cola': 'cola (M)'
+}
 
-    # initialize an empty dataframe for the current model
-    df_model = pd.DataFrame(columns=['Seed', 'qnli (A)', 'mnli (A)', 'rte (A)', 'sst2 (A)', 'qqp (F)', 'mrpc (F)', 'stsb (P)', 'cola (M)'])
+# Create a directory to store the CSV files
+os.makedirs('csvs', exist_ok=True)
 
-    # iterate over each seed folder within the model folder
-    for seed in os.listdir(os.path.join(root_dir, model)):
-        if not os.path.isdir(os.path.join(root_dir, model, seed)):
-            continue
-
-        # initialize a dictionary to store the training results for the current seed
-        seed_results = {}
-
-        # iterate over each task folder within the seed folder
-        for task in os.listdir(os.path.join(root_dir, model, seed)):
-            if not os.path.isdir(os.path.join(root_dir, model, seed, task)):
-                continue
-
-            # read the contents of the readme file and extract the most recent training results
-            training_results = ""
-            with open(os.path.join(root_dir, model, seed, task, 'README.md'), 'r') as f:
-                readme_contents = f.read()
-                start_index = readme_contents.find("### Training results")
-                if start_index != -1:
-                    end_index = readme_contents.find("### Framework versions", start_index + 1)
-                    training_results = readme_contents[start_index:end_index].strip().split("\n")[-1]
-                    task_name = task.split("_")[0]
-                    if task_name in ["cola", "rte", "sst2", "qnli", "mnli"]:
-                        training_results = training_results.split()[-2]
-                    elif task_name in ["stsb", "mrpc", "qqp"]:
-                        training_results = training_results.split()[-4]
-
-            # store the training results in the seed_results dictionary
-            task_name = task.split("_")[0]
-            seed_results[f"{task_name} ({training_results.split()[1]})"] = training_results.split()[0]
-
-        # append the training results for the current seed to the dataframe for the current model
-        df_model = df_model.append(seed_results, ignore_index=True)
-
-    # save the dataframe for the current model to a CSV file under the 'csv' directory
-    csv_path = os.path.join(csv_dir, f"{model}.csv")
-    df_model.to_csv(csv_path, index=False)
+for model in models:
+    # Filter the original DataFrame by the model name
+    model_df = df[df['Model'] == model]
+    
+    # Drop the 'Model' column
+    model_df = model_df.drop(columns=['Model'])
+    
+    # Rename the 'Task' column values using the task_mapping dictionary
+    model_df['Task'] = model_df['Task'].apply(lambda task: task_mapping[task])
+    
+    # Pivot the DataFrame to have the desired format
+    model_df = model_df.pivot_table(index='Seed', columns='Task', values='Training Results')
+    
+    # Reset the index
+    model_df.reset_index(inplace=True)
+    
+    # Save the new DataFrame as a CSV file under the 'csvs' folder
+    model_df.to_csv(f'csvs/{model}.csv', index=False)
