@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # path to the main directory
-directory = '../../768DistilbertL1012/Totest/distilbert-base-uncased'
+directory = '../PrunedModels/pruned-bert-base'
 dic = {}
 
 # Iterate through all output subfolder to read all results
@@ -34,7 +34,7 @@ for seed in os.listdir(directory):
                 dic[tasksname].append(value)
 
 #iterate through bert folder
-directory2 = '../../768DistilbertL1012/BERT-BASE-UNCASED'
+directory2 = '../OriginalModels/BERT-BASE-UNCASED'
 dic2 = {}
 for seed in os.listdir(directory2):
     for tasksname in os.listdir(directory2 + '/' + seed):
@@ -115,7 +115,7 @@ ax.bar(np.arange(len(keys)), means, yerr=errors, align='center', alpha=0.5, erro
 ax.set_xticks(np.arange(len(keys)))
 ax.set_xticklabels(keys)
 ax.set_ylabel('Mean')
-ax.set_title('Evaluation Scores : distilbert-base-uncased vs BERT-BASE-UNCASED')
-plt.savefig('fig/distilbert-base-uncased.png', format='png')
+ax.set_title('Evaluation Scores : Pruned uncased bert vs BERT-BASE-UNCASED')
+plt.savefig('fig/pruned-bert-base-uncased-comparison.png', format='png')
 plt.xlabel('GLUE tasks')
 plt.show()
