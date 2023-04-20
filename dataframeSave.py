@@ -20,6 +20,9 @@ task_mapping = {
     'cola': 'cola (M)'
 }
 
+# Define the desired order for columns
+column_order = ['Seed', 'qnli (A)', 'mnli (A)', 'rte (A)', 'sst2 (A)', 'qqp (F)', 'mrpc (F)', 'stsb (P)', 'cola (M)']
+
 # Create a directory to store the CSV files
 os.makedirs('csvs', exist_ok=True)
 
@@ -38,6 +41,9 @@ for model in models:
     
     # Reset the index
     model_df.reset_index(inplace=True)
+
+    # Reorder the columns according to the desired order
+    model_df = model_df[column_order]
     
     # Save the new DataFrame as a CSV file under the 'csvs' folder
     model_df.to_csv(f'csvs/{model}.csv', index=False)
